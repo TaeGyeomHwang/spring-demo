@@ -4,17 +4,22 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import java.io.IOException;
 
-public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class CustomAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
+    public CustomAuthenticationEntryPoint(String loginFormUrl) {
+        super(loginFormUrl);
+    }
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        if("XMLHttpRequest".equals(request.getHeader("x-requested-with"))){
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-        }else{
-            response.sendRedirect("/members/login");
+        String ajaxHeader = request.getHeader("X-Requested-With");
+        if (ajaxHeader.equals("XMLHttpRequest")) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Ajax Request Denied");
+        } else {
+            super.commence(request, response, authException);
         }
     }
 }

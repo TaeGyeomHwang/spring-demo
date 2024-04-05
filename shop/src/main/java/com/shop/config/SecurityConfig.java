@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -17,6 +18,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+        requestCache.setMatchingRequestParameterName(null);
 
         http.formLogin((it) -> it
                 .loginPage("/members/login")
@@ -41,8 +44,11 @@ public class SecurityConfig {
                     .anyRequest().authenticated();
         });
 
+        http.requestCache((cache)->cache
+                .requestCache(requestCache));
+
         http.exceptionHandling((it) ->
-                it.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                it.authenticationEntryPoint(new CustomAuthenticationEntryPoint("/members/login"))
         );
 
         return http.build();
