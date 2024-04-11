@@ -79,7 +79,7 @@
             });
         }
 
-        function deleteCartItem(obj){
+        function deleteCartItem(obj) {
 
             var cartItemId = obj.dataset.id;
             var token = $("meta[name='_csrf']").attr("content");
@@ -88,23 +88,23 @@
             var url = "/cartItem/" + cartItemId;
 
             $.ajax({
-                url      : url,
-                type     : "DELETE",
-                beforeSend : function(xhr){
+                url: url,
+                type: "DELETE",
+                beforeSend: function (xhr) {
                     /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
                     xhr.setRequestHeader(header, token);
                 },
-                dataType : "json",
-                cache   : false,
-                success  : function(result, status){
-                    location.href='/cart';
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    location.href = '/cart';
                 },
-                error : function(jqXHR, status, error){
+                error: function (jqXHR, status, error) {
 
-                    if(jqXHR.status == '401'){
+                    if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
-                        location.href='/members/login';
-                    } else{
+                        location.href = '/members/login';
+                    } else {
                         alert(jqXHR.responseJSON.message);
                     }
 
@@ -112,7 +112,7 @@
             });
         }
 
-        function orders(){
+        function orders() {
 
             var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
@@ -120,9 +120,9 @@
             var url = "/cart/orders";
 
             var dataList = new Array();
-            var paramData  = new Object();
+            var paramData = new Object();
 
-            $("input[name=cartChkBox]:checked").each(function (){
+            $("input[name=cartChkBox]:checked").each(function () {
                 var cartItemId = $(this).val();
                 var data = new Object();
                 data["cartItemId"] = cartItemId;
@@ -134,26 +134,26 @@
             var param = JSON.stringify(paramData);
 
             $.ajax({
-                url      : url,
-                type     : "POST",
-                contentType:"application/json",
-                data:param,
-                beforeSend : function(xhr){
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
                     /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
                     xhr.setRequestHeader(header, token);
                 },
-                dataType : "json",
-                cache   : false,
-                success  : function(result, status){
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
                     alert("주문이 완료 되었습니다.");
-                    location.href='/orders';
+                    location.href = '/orders';
                 },
-                error : function(jqXHR, status, error){
+                error: function (jqXHR, status, error) {
 
-                    if(jqXHR.status == '401'){
+                    if (jqXHR.status == '401') {
                         alert('로그인 후 이용해주세요');
-                        location.href='/members/login';
-                    } else{
+                        location.href = '/members/login';
+                    } else {
                         alert(jqXHR.responseJSON.message);
                     }
 
@@ -223,12 +223,13 @@
                     <input type="checkbox" name="cartChkBox" th:value="${cartItem.cartItemId}">
                 </td>
                 <td class="d-flex">
-                    <div class="repImgDiv align-self-center">
-                        <img th:src="${cartItem.imgUrl}" class="rounded repImg" th:alt="${cartItem.itemNm}">
-                    </div>
-                    <div class=" align-self-center">
-                        <span th:text="${cartItem.itemNm}" class="fs24 font-weight-bold"></span>
-                        <div class="fs18 font-weight-light">
+<!--                    <a th:href="'/item/' +${cartItem.cartItemId}" class="text-dark">-->
+                        <div class="repImgDiv align-self-center">
+                            <img th:src="${cartItem.imgUrl}" class="rounded repImg" th:alt="${cartItem.itemNm}">
+                        </div>
+                        <div class=" align-self-center">
+                            <span th:text="${cartItem.itemNm}" class="fs24 font-weight-bold"></span>
+                            <div class="fs18 font-weight-light">
                             <span class="input-group mt-2">
                                 <span th:id="'price_'+${cartItem.cartItemId}" th:data-price="${cartItem.price}"
                                       th:text="${cartItem.price}+'원'" class="align-self-center mr-2"></span>
@@ -236,11 +237,13 @@
                                        th:value="${cartItem.count}" min="1" onchange="changeCount(this)"
                                        class="form-control mr-2">
                                 <button type="button" class="close" aria-label="Close">
-                                    <span aria-hidden="true" th:data-id="${cartItem.cartItemId}" onclick="deleteCartItem(this)">&times;</span>
+                                    <span aria-hidden="true" th:data-id="${cartItem.cartItemId}"
+                                          onclick="deleteCartItem(this)">&times;</span>
                                 </button>
                             </span>
+                            </div>
                         </div>
-                    </div>
+<!--                    </a>-->
                 </td>
                 <td class="text-center align-middle">
                     <span th:id="'totalPrice_'+${cartItem.cartItemId}" name="totalPrice"

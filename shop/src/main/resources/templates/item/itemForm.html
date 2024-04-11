@@ -23,13 +23,28 @@
                 var fileExt = fileName.substring(fileName.lastIndexOf(".")+1); // 확장자 추출
                 fileExt = fileExt.toLowerCase(); //소문자 변환
 
-                if(fileExt != "jpg" && fileExt != "jpeg" && fileExt != "gif" && fileExt != "png" && fileExt != "bmp"){
+                if(fileExt != "jpg" && fileExt != "jpeg" && fileExt != "gif" && fileExt != "png" && fileExt != "bmp" && fileExt != "webp" && fileExt != "avif"){
                     alert("이미지 파일만 등록이 가능합니다.");
                     return;
                 }
 
                 $(this).siblings(".custom-file-label").html(fileName);
+                setThumbnail(this);
             });
+        }
+
+        function setThumbnail(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(event) {
+                    var img = document.createElement("img");
+                    img.setAttribute("src", event.target.result);
+                    $(input).siblings(".image_container").html(img);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
         }
 
     </script>
@@ -47,6 +62,15 @@
         }
         .fieldError {
             color: #bd2130;
+        }
+        .image_container {
+            overflow: hidden; /* 넘치는 이미지를 숨김 */
+        }
+
+        .image_container img {
+            padding-top: 20px;
+            max-width: 100px; /* 이미지의 최대 너비 설정 */
+            max-height: 100px; /* 이미지의 최대 높이 설정 */
         }
     </style>
 </th:block>
@@ -103,16 +127,18 @@
         <div th:if="${#lists.isEmpty(itemFormDto.itemImgDtoList)}">
             <div class="form-group" th:each="num: ${#numbers.sequence(1,5)}">
                 <div class="custom-file img-div">
-                    <input type="file" class="custom-file-input" name="itemImgFile">
+                    <input type="file" class="custom-file-input" name="itemImgFile" onchange="setThumbnail(this);">
                     <label class="custom-file-label" th:text="상품이미지 + ${num}"></label>
+                    <div class="image_container"></div>
                 </div>
+
             </div>
         </div>
 
         <div th:if = "${not #lists.isEmpty(itemFormDto.itemImgDtoList)}">
             <div class="form-group" th:each="itemImgDto, status: ${itemFormDto.itemImgDtoList}">
                 <div class="custom-file img-div">
-                    <input type="file" class="custom-file-input" name="itemImgFile">
+                    <input type="file" class="custom-file-input" name="itemImgFile" onchange="setThumbnail(this);">
                     <input type="hidden" name="itemImgIds" th:value="${itemImgDto.id}">
                     <label class="custom-file-label" th:text="${not #strings.isEmpty(itemImgDto.oriImgName)} ? ${itemImgDto.oriImgName} : '상품이미지' + ${status.index+1}"></label>
                 </div>
