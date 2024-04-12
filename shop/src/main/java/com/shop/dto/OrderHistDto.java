@@ -19,10 +19,13 @@ public class OrderHistDto {
 
     private OrderStatus orderStatus;
 
+    private int totalPrice;
+
     public OrderHistDto(Order order){
         this.orderId = order.getId();
         this.orderDate = order.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.orderStatus = order.getOrderStatus();
+        this.totalPrice = order.getTotalPrice();
     }
 
     private List<OrderItemDto> orderItemDtoList = new ArrayList<>();
@@ -30,4 +33,5 @@ public class OrderHistDto {
     public void addOrderItemDto(OrderItemDto orderItemDto){
         orderItemDtoList.add(orderItemDto);
     }
+
 }

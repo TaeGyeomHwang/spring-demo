@@ -19,4 +19,5 @@ public class CartDetailDto {
 
     private String  imgUrl;
 
+    private Long itemId;
 }
