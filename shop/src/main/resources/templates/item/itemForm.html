@@ -23,8 +23,13 @@
                 var fileExt = fileName.substring(fileName.lastIndexOf(".")+1); // 확장자 추출
                 fileExt = fileExt.toLowerCase(); //소문자 변환
 
-                if(fileExt != "jpg" && fileExt != "jpeg" && fileExt != "gif" && fileExt != "png" && fileExt != "bmp" && fileExt != "webp" && fileExt != "avif"){
+                if (fileExt == ''){
+                    clearInputFile(this);
+                    return;
+                }
+                else if(fileExt != "jpg" && fileExt != "jpeg" && fileExt != "gif" && fileExt != "png" && fileExt != "bmp" && fileExt != "webp" && fileExt != "avif"){
                     alert("이미지 파일만 등록이 가능합니다.");
+                    clearInputFile(this);
                     return;
                 }
 
@@ -34,17 +39,32 @@
         }
 
         function setThumbnail(input) {
+            var $imageContainer = $(input).siblings(".image_container");
+            $imageContainer.empty(); // 이미지 컨테이너 초기화
+
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
 
                 reader.onload = function(event) {
                     var img = document.createElement("img");
                     img.setAttribute("src", event.target.result);
-                    $(input).siblings(".image_container").html(img);
+                    $imageContainer.html(img);
                 };
 
                 reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        function clearInputFile(input) {
+            // 파일 선택 태그 클리어
+            $(input).val('');
+
+            // 미리보기 제거
+            var $imageContainer = $(input).siblings(".image_container");
+            $imageContainer.empty();
+
+            // 라벨 클리어
+            $(input).siblings(".custom-file-label").html('상품이미지');
         }
 
     </script>
@@ -131,7 +151,6 @@
                     <label class="custom-file-label" th:text="상품이미지 + ${num}"></label>
                     <div class="image_container"></div>
                 </div>
-
             </div>
         </div>
 
