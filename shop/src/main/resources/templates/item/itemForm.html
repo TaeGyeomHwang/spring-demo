@@ -99,9 +99,16 @@
 
     <form role="form" method="post" enctype="multipart/form-data" th:object="${itemFormDto}">
 
-        <p class="h2">
-            상품 등록
-        </p>
+        <div th:if="${#lists.isEmpty(itemFormDto.itemImgDtoList)}">
+            <p class="h2">
+                상품 등록
+            </p>
+        </div>
+        <div th:if = "${not #lists.isEmpty(itemFormDto.itemImgDtoList)}">
+            <p class="h2">
+                상품 수정
+            </p>
+        </div>
 
         <input type="hidden" th:field="*{id}">
 
@@ -160,6 +167,11 @@
                     <input type="file" class="custom-file-input" name="itemImgFile" onchange="setThumbnail(this);">
                     <input type="hidden" name="itemImgIds" th:value="${itemImgDto.id}">
                     <label class="custom-file-label" th:text="${not #strings.isEmpty(itemImgDto.oriImgName)} ? ${itemImgDto.oriImgName} : '상품이미지' + ${status.index+1}"></label>
+                    <div class="image_container">
+                        <div th:if = "${not #strings.isEmpty(itemImgDto.imgUrl)}">
+                            <img th:src="${itemImgDto.imgUrl}">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
