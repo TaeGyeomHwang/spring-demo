@@ -1,6 +1,7 @@
 package com.boot.demo.service;
 
 import com.boot.demo.dto.LoginDto;
+import com.boot.demo.dto.TokenRequest;
 import com.boot.demo.dto.TokenResponse;
 import com.boot.demo.dto.UserFormDto;
 import com.boot.demo.entity.RefreshToken;
@@ -9,7 +10,6 @@ import com.boot.demo.jwt.TokenProvider;
 import com.boot.demo.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -48,6 +48,25 @@ public class UserService implements UserDetailsService {
         userRepository.save(saveUser);
     }
 
+    public TokenResponse tokenRefresh(TokenRequest request) throws IllegalAccessException {
+        if (!tokenProvider.validateToken(request.getRefreshToken())) {
+            throw new IllegalAccessException("Unexpected token");
+        }
+
+        RefreshToken refreshToken = refreshTokenService
+                .findByRefreshToken(request.getRefreshToken());
+
+        User user = refreshToken.getUser();
+
+        String accessToken = tokenProvider.createAccessToken(user, Duration.ofHours(2));
+        String newRefreshToken =
+                refreshToken.update(tokenProvider
+                        .createRefreshToken(Duration.ofDays(1)))
+                        .getRefreshToken();
+
+        return new TokenResponse(accessToken, newRefreshToken);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findById(username)
@@ -67,9 +86,9 @@ public class UserService implements UserDetailsService {
         String newRefreshToken = tokenProvider.createRefreshToken(Duration.ofDays(1));
         RefreshToken existRefreshToken = refreshTokenService.findByUser(user);
 //       없다면 토큰을 생성, 저장
-        if(existRefreshToken==null){
+        if (existRefreshToken == null) {
             refreshTokenService.saveToken(new RefreshToken(user, newRefreshToken));
-        }else {
+        } else {
 //       있다면 update
             existRefreshToken.update(newRefreshToken);
         }
@@ -78,4 +97,5 @@ public class UserService implements UserDetailsService {
 
         return new TokenResponse(accessToken, newRefreshToken);
     }
+
 }
