@@ -1,6 +1,8 @@
 package com.boot.demo.config;
 
-import com.boot.demo.jwt.JWTFilter;
+import com.boot.demo.jwt.JwtAccessDeniedHandler;
+import com.boot.demo.jwt.JwtAuthenticationEntryPoint;
+import com.boot.demo.jwt.JwtFilter;
 import com.boot.demo.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,10 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
 
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -44,16 +50,17 @@ public class SecurityConfig {
                 .csrf(
                         csrf -> csrf.disable()
                 )
-                .logout(
-                        logout -> logout.clearAuthentication(true)
-                )
                 .sessionManagement(
                         sessionManage -> sessionManage
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(
-                        new JWTFilter(tokenProvider),
+                        new JwtFilter(tokenProvider),
                         UsernamePasswordAuthenticationFilter.class
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(request -> {
                     request

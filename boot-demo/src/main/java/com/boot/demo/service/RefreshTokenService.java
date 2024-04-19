@@ -25,4 +25,12 @@ public class RefreshTokenService {
     public void saveToken(RefreshToken refreshToken){
         refreshTokenRepository.save(refreshToken);
     }
+
+    public void removeToken(String refreshToken) {
+        RefreshToken findToken = refreshTokenRepository
+                .findByRefreshToken(refreshToken)
+                .orElseThrow(EntityNotFoundException::new);
+
+        refreshTokenRepository.delete(findToken);
+    }
 }

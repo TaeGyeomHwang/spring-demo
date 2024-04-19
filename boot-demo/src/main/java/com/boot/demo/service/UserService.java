@@ -64,7 +64,7 @@ public class UserService implements UserDetailsService {
                         .createRefreshToken(Duration.ofDays(1)))
                         .getRefreshToken();
 
-        return new TokenResponse(accessToken, newRefreshToken);
+        return new TokenResponse(accessToken, newRefreshToken, user.getRole().getKey());
     }
 
     @Override
@@ -95,7 +95,11 @@ public class UserService implements UserDetailsService {
 //       엑세스 토큰을 발급하고 TokenResponse 반환
         String accessToken = tokenProvider.createAccessToken(user, Duration.ofHours(2));
 
-        return new TokenResponse(accessToken, newRefreshToken);
+        return new TokenResponse(accessToken, newRefreshToken, user.getRole().getKey());
+    }
+
+    public void logout(TokenRequest request) {
+        refreshTokenService.removeToken(request.getRefreshToken());
     }
 
 }
