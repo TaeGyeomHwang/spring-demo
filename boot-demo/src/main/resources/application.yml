@@ -4,11 +4,11 @@ server:
 #develop
 frontDomain: "http://localhost:3000"
 dbDomain: "mysql://localhost:3306"
+#deploy
+#frontDomain: "http://54.180.92.229:3000"
+#dbDomain: "mysql://43.200.180.97:3306"
 dbUser: "root"
 dbPasswd: "1234"
-
-#deploy
-#frontDomain: "http://[공인IP]:3000"
 
 spring:
   datasource:
@@ -18,7 +18,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true

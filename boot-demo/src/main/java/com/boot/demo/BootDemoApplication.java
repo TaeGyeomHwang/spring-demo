@@ -10,8 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class BootDemoApplication {
 
-    @Value("${frontDomain}")
-    private String frontDomain;
+//    @Value("${frontDomain}")
+//    private String frontDomain;
 
     public static void main(String[] args) {
         SpringApplication.run(BootDemoApplication.class, args);
